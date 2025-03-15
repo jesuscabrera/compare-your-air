@@ -1,35 +1,41 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+// src/App.tsx
+import { ThemeProvider } from "@mui/material/styles";
+import CssBaseline from "@mui/material/CssBaseline";
+import theme from "./theme";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <Box
+        sx={{
+          minHeight: "100vh",
+          background: "linear-gradient(135deg, #673ab7 0%, #3f51b5 100%)",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          padding: 4,
+        }}
+      >
+        <Typography variant="h1" component="h1" sx={{ mb: 2 }}>
+          Compare your Air
+        </Typography>
+        <Typography
+          variant="h2"
+          component="h2"
+          sx={{ mb: 4, textAlign: "center" }}
+        >
+          Compare the air quality between cities in the UK.
+          <br />
+          Select cities to compare using the search tool below.
+        </Typography>
+
+        {/* You'll add the search component and results here in the next steps */}
+      </Box>
+    </ThemeProvider>
+  );
 }
 
-export default App
+export default App;
