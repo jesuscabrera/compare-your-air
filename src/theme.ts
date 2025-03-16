@@ -4,12 +4,12 @@ import { createTheme } from "@mui/material/styles";
 const theme = createTheme({
   palette: {
     primary: {
-      main: "#673ab7", // Purple color from the design
+      main: "#673ab7",
       light: "#9575cd",
       dark: "#512da8",
     },
     secondary: {
-      main: "#3f51b5", // Blue color from the design
+      main: "#3f51b5",
       light: "#7986cb",
       dark: "#303f9f",
     },
@@ -25,24 +25,25 @@ const theme = createTheme({
       color: "#ffffff",
     },
     h2: {
-      fontSize: "1.1rem",
+      fontSize: "1.5rem",
       fontWeight: 400,
       color: "#ffffff",
-      lineHeight: 1.5,
+      lineHeight: 2,
     },
     body1: {
       fontSize: "1rem",
-      color: "#333333",
+      color: "#000000",
     },
     body2: {
       fontSize: "0.875rem",
-      color: "#666666",
+      color: "#000000",
     },
   },
   components: {
     MuiCard: {
       styleOverrides: {
         root: {
+          paddingTop: 16,
           borderRadius: 8,
           boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
           backgroundColor: "#ffffff",
@@ -102,6 +103,7 @@ const theme = createTheme({
           fontFamily: "'Open Sans', sans-serif",
           borderRadius: 8,
           textTransform: "none",
+          color: "#000000",
         },
       },
     },
