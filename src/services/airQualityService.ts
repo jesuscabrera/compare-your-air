@@ -1,80 +1,92 @@
 // src/services/airQualityService.ts
-import { CityAirQuality } from "../types/airQuality";
-import { City } from "../types/city";
+import { Location, City, CityAirQuality } from "../types/types";
 import { formatDistanceToNow } from "date-fns";
 
 export const searchCities = async (query: string): Promise<City[]> => {
   try {
+    // Retrieve API key and validate it
     const apiKey = import.meta.env.VITE_OPENAQ_API_KEY;
-    const response = await fetch(
-      "/api/v3/locations?limit=999&page=1&order_by=id&sort_order=asc&countries_id=79",
-      {
-        headers: {
-          Authorization: `Bearer ${apiKey}`,
-        },
-      }
-    );
+    if (!apiKey) {
+      console.error("API key is missing.");
+      return [];
+    }
+
+    // Construct query parameters dynamically
+    const params = new URLSearchParams({
+      limit: "999",
+      page: "1",
+      order_by: "id",
+      sort_order: "asc",
+      countries_id: "79",
+    });
+
+    // Fetch data from API
+    const response = await fetch(`/api/v3/locations?${params.toString()}`, {
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+      },
+    });
+
+    // Handle API errors
     if (!response.ok) {
       const errorText = await response.text();
       console.error("Error response:", errorText);
       return [];
     }
-    const data = await response.json();
-    console.log("Fetched cities:", data);
+
+    // Parse JSON response
+    const data: { results?: Location[] } = await response.json();
+    if (!data.results || !Array.isArray(data.results)) {
+      console.error("Invalid data format:", data);
+      return [];
+    }
 
     // Group locations by locality
-    const locationsByLocality: Record<string, any[]> = {};
-
-    // First, filter and group all locations by locality
+    const locationsByLocality: Record<string, Location[]> = {};
     data.results
-      .filter((location: any) => !!location.locality)
-      .forEach((location: any) => {
-        const locality = location.locality;
-        if (!locationsByLocality[locality]) {
-          locationsByLocality[locality] = [];
-        }
+      .filter((location) => location.locality)
+      .forEach((location) => {
+        const locality = location.locality!;
+        locationsByLocality[locality] = locationsByLocality[locality] || [];
         locationsByLocality[locality].push(location);
       });
 
-    // Then, for each locality, choose the location with the most recent data
-    const dedupedCities = Object.entries(locationsByLocality).map(
-      ([locality, locations]) => {
-        // Sort locations by datetime (most recent first)
-        const sortedLocations = locations.sort((a, b) => {
-          const dateA = a.datetimeLast?.utc
-            ? new Date(a.datetimeLast.utc)
+    // Deduplicate cities by selecting the most recent location for each locality
+    const dedupedCities: City[] = Object.entries(locationsByLocality).map(
+      ([_, locations]) => {
+        const mostRecentLocation = locations.reduce((latest, current) => {
+          const currentDate = current.datetimeLast?.utc
+            ? new Date(current.datetimeLast.utc)
             : new Date(0);
-          const dateB = b.datetimeLast?.utc
-            ? new Date(b.datetimeLast.utc)
+          const latestDate = latest.datetimeLast?.utc
+            ? new Date(latest.datetimeLast.utc)
             : new Date(0);
-          return dateB.getTime() - dateA.getTime(); // Descending order (newest first)
+          return currentDate > latestDate ? current : latest;
         });
-
-        // Take the most recent one
-        const mostRecentLocation = sortedLocations[0];
 
         // Convert to City type
         return {
           id: mostRecentLocation.id,
-          name: mostRecentLocation.locality,
-          location: mostRecentLocation.locality || mostRecentLocation.name,
-          datetimeLast: mostRecentLocation.datetimeLast?.utc,
-          sensors: mostRecentLocation.sensors.map((sensor: any) => ({
-            id: sensor.id,
-            name: sensor.name,
-            parameter: sensor.parameter,
-          })),
+          name: mostRecentLocation.locality ?? "Unknown",
+          location:
+            mostRecentLocation.locality ?? mostRecentLocation.name ?? "Unknown",
+          datetimeLast: mostRecentLocation.datetimeLast?.utc ?? "N/A",
+          sensors:
+            mostRecentLocation.sensors?.map((sensor) => ({
+              id: sensor.id,
+              name: sensor.name,
+              parameter: sensor.parameter,
+            })) ?? [],
         };
       }
     );
 
-    // Now filter by query
-    const filteredCities = dedupedCities.filter((city: City) =>
+    // Filter by query (case insensitive)
+    if (!query.trim()) return dedupedCities;
+
+    return dedupedCities.filter((city) =>
       city.name.toLowerCase().includes(query.toLowerCase())
     );
-
-    console.log("Filtered cities:", filteredCities);
-    return filteredCities;
   } catch (error) {
     console.error("Error fetching cities:", error);
     return [];
@@ -102,7 +114,6 @@ export const getAirQualityForCity = async (
     }
 
     const data = await response.json();
-    console.log(`Air quality data for ${city.name}:`, data);
 
     // Check if we have results
     if (!data.results || data.results.length === 0) {
@@ -180,8 +191,6 @@ export const getAirQualityForCity = async (
         delete metrics[key];
       }
     });
-
-    console.log("Created metrics:", metrics);
 
     const cityAirQuality: CityAirQuality = {
       id: String(city.id),

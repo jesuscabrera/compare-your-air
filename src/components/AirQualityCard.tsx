@@ -2,6 +2,11 @@
 import React from "react";
 import { Card, CardContent, Typography, IconButton } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
+import { TEXTS } from "../locales/en";
+
+/*  These interfaces are defined inside the component file because they are only 
+ used within the component, if they are needed elsewhere in the application, 
+ consider moving them to a shared types file (e.g., types.ts). */
 
 interface MetricInfo {
   name: string;
@@ -25,7 +30,7 @@ const AirQualityCard: React.FC<AirQualityCardProps> = ({
 }) => {
   const getMetricsInfo = (): MetricInfo[] => {
     return Object.entries(metrics).map(([key, value]) => ({
-      name: key, // Using the raw key as the metric name
+      name: key,
       value,
     }));
   };
@@ -35,12 +40,12 @@ const AirQualityCard: React.FC<AirQualityCardProps> = ({
       sx={{
         position: "relative",
         width: "100%",
-        maxWidth: { xs: "100%", sm: 350 },
+        maxWidth: { xs: "100%", sm: 450 },
         marginBottom: 2,
       }}
     >
       <IconButton
-        size="medium"
+        size="large"
         onClick={onClose}
         aria-label="Close"
         sx={{
@@ -49,19 +54,19 @@ const AirQualityCard: React.FC<AirQualityCardProps> = ({
           right: 8,
         }}
       >
-        <CloseIcon fontSize="medium" />
+        <CloseIcon fontSize="large" />
       </IconButton>
 
-      <CardContent sx={{ paddingTop: 0 }}>
+      <CardContent sx={{ my: 1, mx: 2 }}>
         <Typography
           variant="body2"
           component="div"
           sx={{ textTransform: "uppercase", textAlign: "left" }}
         >
-          UPDATED {updatedTime}
+          {TEXTS.updated} {updatedTime}
         </Typography>
         <Typography
-          variant="h6"
+          variant="h5"
           component="div"
           color="primary"
           sx={{ fontWeight: 900, textAlign: "left" }}
@@ -70,14 +75,13 @@ const AirQualityCard: React.FC<AirQualityCardProps> = ({
         </Typography>
         <Typography
           variant="body2"
-          color="text.secondary"
-          sx={{ mb: 2, textAlign: "left" }}
+          sx={{ mb: 1, fontWeight: 400, textAlign: "left" }}
         >
-          in {location}, United Kingdom
+          {TEXTS.locationPrefix} {location}, {TEXTS.country}
         </Typography>
 
         <Typography variant="body2" fontWeight={600} sx={{ textAlign: "left" }}>
-          &nbsp;Values:&nbsp;
+          {TEXTS.values}&nbsp;
           {getMetricsInfo().map((metric, i) => (
             <React.Fragment key={metric.name}>
               {metric.name}: {metric.value}

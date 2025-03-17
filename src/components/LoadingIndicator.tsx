@@ -1,6 +1,7 @@
 // src/components/LoadingIndicator.tsx
 import React from "react";
 import { Box, CircularProgress, Typography } from "@mui/material";
+import { TEXTS } from "../locales/en";
 
 const LoadingIndicator: React.FC = () => {
   return (
@@ -8,14 +9,12 @@ const LoadingIndicator: React.FC = () => {
       sx={{
         display: "flex",
         flexDirection: "column",
-        alignItems: "center",
-        mt: 4,
+        alignItems: "top",
+        mt: 2,
       }}
     >
       <CircularProgress color="secondary" />
-      <Typography variant="body2" color="white" sx={{ mt: 2 }}>
-        Loading air quality data...
-      </Typography>
+      <Typography variant="h2">{TEXTS.loadingAirQuality}</Typography>
     </Box>
   );
 };

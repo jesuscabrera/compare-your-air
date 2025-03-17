@@ -8,7 +8,8 @@ import {
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import { searchCities } from "../services/airQualityService";
-import { City } from "../types/city";
+import { City } from "../types/types";
+import { TEXTS } from "../locales/en";
 
 interface CitySearchProps {
   onCitySelect: (city: City) => void;
@@ -26,8 +27,6 @@ const CitySearch: React.FC<CitySearchProps> = ({ onCitySelect }) => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        // If inputValue is empty, we assume searchCities("") returns *all* cities
-        // Otherwise, it returns only matching cities.
         const results = await searchCities(inputValue);
         if (active) {
           setOptions(results);
@@ -49,7 +48,7 @@ const CitySearch: React.FC<CitySearchProps> = ({ onCitySelect }) => {
     <Box
       sx={{
         width: "100%",
-        maxWidth: 600,
+        maxWidth: 450,
         margin: "0 auto",
         px: { xs: 1, sm: 2, md: 0 },
       }}
@@ -72,12 +71,12 @@ const CitySearch: React.FC<CitySearchProps> = ({ onCitySelect }) => {
             setInputValue("");
           }
         }}
-        noOptionsText="No cities found"
-        loadingText="Searching cities..."
+        noOptionsText={TEXTS.noOptions}
+        loadingText={TEXTS.loading}
         renderInput={(params) => (
           <TextField
             {...params}
-            placeholder="Enter city name..."
+            placeholder={TEXTS.placeholder}
             variant="outlined"
             fullWidth
             slotProps={{
