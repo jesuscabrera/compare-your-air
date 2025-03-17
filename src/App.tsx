@@ -12,15 +12,15 @@ import LoadingIndicator from "./components/LoadingIndicator";
 import ErrorState from "./components/ErrorState";
 import { CityAirQuality } from "./types/airQuality";
 import { getAirQualityForCity } from "./services/airQualityService";
+import { City } from "./types/city";
 
 function App() {
   const [selectedCities, setSelectedCities] = useState<CityAirQuality[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleCitySelect = async (city: string) => {
-    // Check if city is already selected
-    if (selectedCities.some((c) => c.cityName.includes(city))) {
+  const handleCitySelect = async (city: City) => {
+    if (selectedCities.some((c) => c.cityName.includes(city.name))) {
       return;
     }
 
@@ -29,10 +29,11 @@ function App() {
 
     try {
       const airQualityData = await getAirQualityForCity(city);
+      console.log("Air quality data for city:", airQualityData);
       if (airQualityData) {
         setSelectedCities((prev) => [...prev, airQualityData]);
       } else {
-        setError(`No air quality data available for ${city}`);
+        setError(`No air quality data available for ${city.name}`);
       }
     } catch (error) {
       console.error("Error fetching air quality data:", error);

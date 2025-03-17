@@ -56,6 +56,7 @@ const theme = createTheme({
           "& .MuiOutlinedInput-root": {
             borderRadius: 8,
             backgroundColor: "#ffffff",
+            border: "2px solid #ccc",
           },
         },
       },
@@ -64,7 +65,7 @@ const theme = createTheme({
       styleOverrides: {
         paper: {
           borderRadius: 8,
-          marginTop: 4,
+          marginTop: 0,
         },
         option: {
           fontFamily: "'Open Sans', sans-serif",

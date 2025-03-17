@@ -6,19 +6,13 @@ import CloseIcon from "@mui/icons-material/Close";
 interface MetricInfo {
   name: string;
   value: number;
-  description: string;
 }
 
 interface AirQualityCardProps {
   cityName: string;
   location: string;
   updatedTime: string;
-  metrics: {
-    PM25: number;
-    SO2: number;
-    O3: number;
-    NO2: number;
-  };
+  metrics: Record<string, number>;
   onClose: () => void;
 }
 
@@ -30,28 +24,10 @@ const AirQualityCard: React.FC<AirQualityCardProps> = ({
   onClose,
 }) => {
   const getMetricsInfo = (): MetricInfo[] => {
-    return [
-      {
-        name: "PM2.5",
-        value: metrics.PM25,
-        description: "Fine particulate matter with diameter less than 2.5 μm",
-      },
-      {
-        name: "SO₂",
-        value: metrics.SO2,
-        description: "Sulfur dioxide released from burning fossil fuels",
-      },
-      {
-        name: "O₃",
-        value: metrics.O3,
-        description: "Ozone formed by reaction of pollutants with sunlight",
-      },
-      {
-        name: "NO₂",
-        value: metrics.NO2,
-        description: "Nitrogen dioxide from vehicle exhaust and power plants",
-      },
-    ];
+    return Object.entries(metrics).map(([key, value]) => ({
+      name: key, // Using the raw key as the metric name
+      value,
+    }));
   };
 
   return (
@@ -82,7 +58,7 @@ const AirQualityCard: React.FC<AirQualityCardProps> = ({
           component="div"
           sx={{ textTransform: "uppercase", textAlign: "left" }}
         >
-          {updatedTime}
+          UPDATED {updatedTime}
         </Typography>
         <Typography
           variant="h6"
@@ -97,15 +73,15 @@ const AirQualityCard: React.FC<AirQualityCardProps> = ({
           color="text.secondary"
           sx={{ mb: 2, textAlign: "left" }}
         >
-          in {location}
+          in {location}, United Kingdom
         </Typography>
 
         <Typography variant="body2" fontWeight={600} sx={{ textAlign: "left" }}>
-          Values:&nbsp;
+          &nbsp;Values:&nbsp;
           {getMetricsInfo().map((metric, i) => (
             <React.Fragment key={metric.name}>
               {metric.name}: {metric.value}
-              {i < getMetricsInfo().length - 1 ? ", " : ""}
+              {i < getMetricsInfo().length - 1 ? ", " : ""} &nbsp;
             </React.Fragment>
           ))}
         </Typography>

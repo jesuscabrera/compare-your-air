@@ -8,14 +8,15 @@ import {
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import { searchCities } from "../services/airQualityService";
+import { City } from "../types/city";
 
 interface CitySearchProps {
-  onCitySelect: (city: string) => void;
+  onCitySelect: (city: City) => void;
 }
 
 const CitySearch: React.FC<CitySearchProps> = ({ onCitySelect }) => {
   const [inputValue, setInputValue] = useState("");
-  const [options, setOptions] = useState<string[]>([]);
+  const [options, setOptions] = useState<City[]>([]);
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
 
@@ -29,7 +30,7 @@ const CitySearch: React.FC<CitySearchProps> = ({ onCitySelect }) => {
         // Otherwise, it returns only matching cities.
         const results = await searchCities(inputValue);
         if (active) {
-          setOptions(results.map((result) => result.name));
+          setOptions(results);
         }
       } catch (error) {
         console.error("Error searching cities:", error);
@@ -60,6 +61,7 @@ const CitySearch: React.FC<CitySearchProps> = ({ onCitySelect }) => {
         onOpen={() => setOpen(true)}
         onClose={() => setOpen(false)}
         options={options}
+        getOptionLabel={(option: City) => option.name}
         loading={loading}
         disablePortal={true}
         inputValue={inputValue}
