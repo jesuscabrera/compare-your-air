@@ -1,12 +1,22 @@
 // src/hooks/useAirQuality.ts
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { City, CityAirQuality } from "../types/types";
 import { getAirQualityForCity } from "../services/airQualityService";
 
 export const useAirQuality = () => {
-  const [selectedCities, setSelectedCities] = useState<CityAirQuality[]>([]);
+  // Initialize state from localStorage if available
+  const [selectedCities, setSelectedCities] = useState<CityAirQuality[]>(() => {
+    const savedCities = localStorage.getItem("selectedCities");
+    return savedCities ? JSON.parse(savedCities) : [];
+  });
+
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Save to localStorage whenever selectedCities changes
+  useEffect(() => {
+    localStorage.setItem("selectedCities", JSON.stringify(selectedCities));
+  }, [selectedCities]);
 
   // Fetch air quality data for a selected city
   const fetchAirQualityData = async (city: City) => {

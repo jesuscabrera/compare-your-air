@@ -1,6 +1,6 @@
-import { createTheme } from "@mui/material/styles";
+import { createTheme, responsiveFontSizes } from "@mui/material/styles";
 
-const theme = createTheme({
+let theme = createTheme({
   palette: {
     primary: { main: "#673ab7", light: "#9575cd", dark: "#512da8" },
     secondary: { main: "#3f51b5", light: "#7986cb", dark: "#303f9f" },
@@ -20,7 +20,6 @@ const theme = createTheme({
     MuiCard: {
       styleOverrides: {
         root: {
-          paddingTop: 16,
           borderRadius: 8,
           boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
           backgroundColor: "#fff",
@@ -46,5 +45,9 @@ const theme = createTheme({
     },
   },
 });
+
+// This single line automatically creates responsive typography
+// that scales down on smaller screens
+theme = responsiveFontSizes(theme);
 
 export default theme;

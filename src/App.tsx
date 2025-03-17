@@ -45,19 +45,21 @@ function App() {
         >
           {/* HEADER SECTION */}
           <Container component="section" sx={{ py: 4, minHeight: 300 }}>
-            <Typography
-              variant="h1"
-              component="h1"
-              sx={{ mb: 4, mt: { xs: 2, md: 4 } }}
-            >
-              Compare your Air
-            </Typography>
-            <Typography variant="h2" component="h2" sx={{ mb: 0 }}>
-              Compare the air quality between cities in the UK.
-            </Typography>
-            <Typography variant="h2" component="h2" sx={{ mb: 0 }}>
-              Select cities to compare using the search tool below.
-            </Typography>
+            <header>
+              <Typography
+                variant="h1"
+                component="h1"
+                sx={{ mb: 4, mt: { xs: 2, md: 4 } }}
+              >
+                Compare your Air
+              </Typography>
+              <Typography variant="h2" component="h2" sx={{ mb: 0 }}>
+                Compare the air quality between cities in the UK.
+              </Typography>
+              <Typography variant="h2" component="h2" sx={{ mb: 0 }}>
+                Select cities to compare using the search tool below.
+              </Typography>
+            </header>
 
             {/* CITY SEARCH COMPONENT */}
             <Box sx={{ width: "100%", my: 4 }}>
@@ -97,7 +99,6 @@ function App() {
                   flexWrap: "wrap",
                   justifyContent: "center",
                   gap: 2,
-                  mt: 4,
                 }}
               >
                 {selectedCities.map((city) => (

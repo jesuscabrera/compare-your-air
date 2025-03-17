@@ -20,9 +20,17 @@ const CitySearch: React.FC<CitySearchProps> = ({ onCitySelect }) => {
   const [options, setOptions] = useState<City[]>([]);
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
+  // Add the cache state
+  const [searchCache, setSearchCache] = useState<Record<string, City[]>>({});
 
   useEffect(() => {
     let active = true;
+
+    // Check cache before fetching
+    if (searchCache[inputValue]) {
+      setOptions(searchCache[inputValue]);
+      return;
+    }
 
     const fetchData = async () => {
       setLoading(true);
@@ -30,11 +38,14 @@ const CitySearch: React.FC<CitySearchProps> = ({ onCitySelect }) => {
         const results = await searchCities(inputValue);
         if (active) {
           setOptions(results);
+          // Update cache with new results
+          setSearchCache((prev) => ({ ...prev, [inputValue]: results }));
         }
       } catch (error) {
         console.error("Error searching cities:", error);
       } finally {
         setLoading(false);
+        console.log("Fetch data! Search Cities");
       }
     };
 
@@ -42,7 +53,7 @@ const CitySearch: React.FC<CitySearchProps> = ({ onCitySelect }) => {
     return () => {
       active = false;
     };
-  }, [inputValue]);
+  }, [inputValue]); // Remove searchCache from dependencies
 
   return (
     <Box
