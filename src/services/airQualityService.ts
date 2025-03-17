@@ -98,8 +98,13 @@ export const getAirQualityForCity = async (
 ): Promise<CityAirQuality | null> => {
   try {
     const apiKey = import.meta.env.VITE_OPENAQ_API_KEY;
+    const params = new URLSearchParams({
+      limit: "100",
+      page: "1",
+    });
+
     const response = await fetch(
-      `/api/v3/locations/${city.id}/latest?limit=100&page=1`,
+      `/api/v3/locations/${city.id}/latest?${params.toString()}`,
       {
         headers: {
           Authorization: `Bearer ${apiKey}`,
@@ -121,7 +126,7 @@ export const getAirQualityForCity = async (
       return null;
     }
 
-    // Use the datetime from the API result - using the most recent measurement
+    // Use the datetime from all the Sensors - using the most recent Sensor measurement
     const latestMeasurement = data.results.reduce(
       (latest: any, current: any) => {
         if (

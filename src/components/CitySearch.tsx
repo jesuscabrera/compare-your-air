@@ -45,7 +45,6 @@ const CitySearch: React.FC<CitySearchProps> = ({ onCitySelect }) => {
         console.error("Error searching cities:", error);
       } finally {
         setLoading(false);
-        console.log("Fetch data! Search Cities");
       }
     };
 
@@ -53,7 +52,7 @@ const CitySearch: React.FC<CitySearchProps> = ({ onCitySelect }) => {
     return () => {
       active = false;
     };
-  }, [inputValue]); // Remove searchCache from dependencies
+  }, [inputValue]);
 
   return (
     <Box
