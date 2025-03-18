@@ -7,7 +7,7 @@ export default defineConfig(({ mode }) => {
 
   return {
     plugins: [react()],
-    base: "/compare-your-air/",
+    base: "/",
     server: {
       proxy: {
         "/api": {
