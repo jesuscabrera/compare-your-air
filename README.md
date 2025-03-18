@@ -1,43 +1,70 @@
-# Compare Your Air
+🌍 Compare Your Air
 
-An application to compare air quality between cities in the UK using Vite, React, TypeScript, and Material UI.
+A web application to compare air quality data from various locations using OpenAQ API.
 
-## Features
+🚀 Setup Instructions
 
-- Search for UK cities
-- Compare air quality metrics (PM2.5, SO2, O3, NO2)
-- Real-time air quality data display
-- Responsive design for both desktop and mobile
+1️⃣ Clone the Repository
 
-## Development
+First, clone the repository to your local machine and navigate into the project folder:
 
-### Prerequisites
+git clone https://github.com/jesuscabrera/compare-your-air.git
+cd compare-your-air
 
-- Node.js (v14+)
-- npm or yarn
+2️⃣ Switch to the Development Branch
 
-### Setup
+By default, the repository may be on the main branch. To work in development mode, switch to the dev branch:
 
-1. Clone the repository
-   \`\`\`
-   git clone https://github.com/jesuscabrera/compare-your-air.git
-   cd compare-your-air
-   \`\`\`
+git checkout dev
 
-2. Install dependencies
-   \`\`\`
-   npm install
-   \`\`\`
+3️⃣ Install Dependencies
 
-3. Start the development server
-   \`\`\`
-   npm run dev
-   \`\`\`
+Install all necessary dependencies:
 
-## Tech Stack
+npm install
 
-- Vite
-- React
-- TypeScript
-- Material UI
-- Axios for API requests
+4️⃣ Start the Development Server
+
+Run the following command to launch the local development server:
+
+npm run dev
+
+This will start the project in development mode using the code from the dev branch.
+
+🔥 Important Notes
+
+Ensure you are on the dev branch when working locally (git branch to check your current branch).
+
+The main branch is used for production deployment on Vercel, so do not push development changes to main unless they are ready for deployment.
+
+When finished with development, push changes to the dev branch:
+
+git add .
+git commit -m "Your commit message"
+git push origin dev
+
+📡 API Configuration
+
+To use the OpenAQ API, you need an API key. 
+Sign up for an OpenAQ API key at https://explore.openaq.org. 
+After signing up, find your API key in your settings. Use this key to authenticate requests.
+
+Create a .env.local file in the root of your project and add:
+
+VITE_OPENAQ_API_KEY=your-api-key-here
+
+Then restart the development server.
+
+🎉 Now you’re ready to develop and test locally on the dev branch! 🚀
+
+🛠 Technologies Used
+
+Vite - Fast front-end tooling
+
+React 
+
+TypeScript 
+
+OpenAQ API for air quality data
+
+Vercel for production deployment
