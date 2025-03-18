@@ -21,11 +21,14 @@ export const searchCities = async (query: string): Promise<City[]> => {
     });
 
     // Fetch data from API
-    const response = await fetch(`/api/v3/locations?${params.toString()}`, {
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-      },
-    });
+    const response = await fetch(
+      `https://api.openaq.org/v3/locations?${params.toString()}`,
+      {
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+        },
+      }
+    );
 
     // Handle API errors
     if (!response.ok) {
@@ -104,7 +107,9 @@ export const getAirQualityForCity = async (
     });
 
     const response = await fetch(
-      `/api/v3/locations/${city.id}/latest?${params.toString()}`,
+      `https://api.openaq.org/v3/locations/${
+        city.id
+      }/latest?${params.toString()}`,
       {
         headers: {
           Authorization: `Bearer ${apiKey}`,
