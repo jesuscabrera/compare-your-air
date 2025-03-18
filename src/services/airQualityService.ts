@@ -4,8 +4,28 @@ import { formatDistanceToNow } from "date-fns";
 
 export const searchCities = async (query: string): Promise<City[]> => {
   try {
-    // Fetch data from your serverless endpoint instead of the external API directly
-    const response = await fetch("/api/getLocations");
+    // Retrieve API key and validate it
+    const apiKey = import.meta.env.VITE_OPENAQ_API_KEY;
+    if (!apiKey) {
+      console.error("API key is missing.");
+      return [];
+    }
+
+    // Construct query parameters dynamically
+    const params = new URLSearchParams({
+      limit: "999",
+      page: "1",
+      order_by: "id",
+      sort_order: "asc",
+      countries_id: "79",
+    });
+
+    // Fetch data from API
+    const response = await fetch(`/api/v3/locations?${params.toString()}`, {
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+      },
+    });
 
     // Handle API errors
     if (!response.ok) {
@@ -77,8 +97,20 @@ export const getAirQualityForCity = async (
   city: City
 ): Promise<CityAirQuality | null> => {
   try {
-    // Call your serverless function instead of OpenAQ directly
-    const response = await fetch(`/api/getLocationsData?cityId=${city.id}`);
+    const apiKey = import.meta.env.VITE_OPENAQ_API_KEY;
+    const params = new URLSearchParams({
+      limit: "100",
+      page: "1",
+    });
+
+    const response = await fetch(
+      `/api/v3/locations/${city.id}/latest?${params.toString()}`,
+      {
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+        },
+      }
+    );
 
     if (!response.ok) {
       const errorText = await response.text();
