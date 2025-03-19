@@ -1,5 +1,5 @@
 // src/services/airQualityService.ts
-import { Location, City, CityAirQuality } from "../types/types";
+import { Location, City, CityAirQuality, Measurement } from "../types/types";
 import { formatDistanceToNow } from "date-fns";
 
 export const searchCities = async (query: string): Promise<City[]> => {
@@ -42,27 +42,24 @@ export const searchCities = async (query: string): Promise<City[]> => {
     }
 
     // Group locations by locality
-    const locationsByLocality: Record<string, Location[]> = {};
-    data.results
-      .filter((location) => location.locality)
-      .forEach((location) => {
-        const locality = location.locality!;
-        locationsByLocality[locality] = locationsByLocality[locality] || [];
-        locationsByLocality[locality].push(location);
-      });
+    const locationsByLocality = data.results.reduce<Record<string, Location[]>>(
+      (acc, location) => {
+        if (!location.locality) return acc;
+        (acc[location.locality] ||= []).push(location);
+        return acc;
+      },
+      {}
+    );
 
     // Deduplicate cities by selecting the most recent location for each locality
     const dedupedCities: City[] = Object.entries(locationsByLocality).map(
       ([_, locations]) => {
-        const mostRecentLocation = locations.reduce((latest, current) => {
-          const currentDate = current.datetimeLast?.utc
-            ? new Date(current.datetimeLast.utc)
-            : new Date(0);
-          const latestDate = latest.datetimeLast?.utc
-            ? new Date(latest.datetimeLast.utc)
-            : new Date(0);
-          return currentDate > latestDate ? current : latest;
-        });
+        const mostRecentLocation = locations.reduce((latest, current) =>
+          new Date(current.datetimeLast?.utc || 0) >
+          new Date(latest.datetimeLast?.utc || 0)
+            ? current
+            : latest
+        );
 
         // Convert to City type
         return {
@@ -72,21 +69,22 @@ export const searchCities = async (query: string): Promise<City[]> => {
             mostRecentLocation.locality ?? mostRecentLocation.name ?? "Unknown",
           datetimeLast: mostRecentLocation.datetimeLast?.utc ?? "N/A",
           sensors:
-            mostRecentLocation.sensors?.map((sensor) => ({
-              id: sensor.id,
-              name: sensor.name,
-              parameter: sensor.parameter,
+            mostRecentLocation.sensors?.map(({ id, name, parameter }) => ({
+              id,
+              name,
+              parameter,
             })) ?? [],
         };
       }
     );
 
     // Filter by query (case insensitive)
-    if (!query.trim()) return dedupedCities;
-
-    return dedupedCities.filter((city) =>
-      city.name.toLowerCase().includes(query.toLowerCase())
-    );
+    const trimmedQuery = query.trim();
+    return trimmedQuery
+      ? dedupedCities.filter((city) =>
+          city.name.toLowerCase().includes(trimmedQuery.toLowerCase())
+        )
+      : dedupedCities;
   } catch (error) {
     console.error("Error fetching cities:", error);
     return [];
@@ -128,41 +126,34 @@ export const getAirQualityForCity = async (
 
     // Use the datetime from all the Sensors - using the most recent Sensor measurement
     const latestMeasurement = data.results.reduce(
-      (latest: any, current: any) => {
-        if (
-          !latest ||
-          new Date(current.datetime.utc) > new Date(latest.datetime.utc)
-        ) {
-          return current;
-        }
-        return latest;
-      },
+      (latest: Measurement, current: Measurement) =>
+        !latest ||
+        new Date(current.datetime.utc) > new Date(latest.datetime.utc)
+          ? current
+          : latest,
       null
     );
 
-    const updatedTime = formatDistanceToNow(
-      new Date(latestMeasurement.datetime.utc),
-      {
-        addSuffix: true,
-      }
-    );
+    const updatedTime = latestMeasurement
+      ? formatDistanceToNow(new Date(latestMeasurement.datetime.utc), {
+          addSuffix: true,
+        })
+      : "No data available";
 
     // Create a map to store sensor information from the city object
-    const sensorMap = new Map();
-    if (city.sensors && Array.isArray(city.sensors)) {
-      city.sensors.forEach((sensor) => {
-        sensorMap.set(sensor.id, {
+    const sensorMap =
+      city?.sensors?.reduce((map, sensor) => {
+        return map.set(sensor.id, {
           name: sensor.name,
           parameter: sensor.parameter,
         });
-      });
-    }
+      }, new Map()) || new Map();
 
     // Create metrics object using data from API results and sensor map
     const metrics: Record<string, number> = {};
 
     // Process each measurement from the API response
-    data.results.forEach((measurement: any) => {
+    data.results.forEach((measurement: Measurement) => {
       // Try to get sensor info from the sensor map
       const sensorInfo = sensorMap.get(measurement.sensorsId);
 
@@ -178,15 +169,19 @@ export const getAirQualityForCity = async (
         // Use the most recent value for each parameter type
         if (
           !metrics[key] ||
-          measurement.datetime.utc > metrics[`${key}_datetime`]
+          !metrics[`${key}_datetime`] ||
+          new Date(measurement.datetime.utc).getTime() >
+            metrics[`${key}_datetime`]
         ) {
-          metrics[key] = measurement.value.toFixed(2);
-          metrics[`${key}_datetime`] = measurement.datetime.utc; // Store datetime for comparison
+          metrics[key] = parseFloat(measurement.value.toFixed(2));
+          metrics[`${key}_datetime`] = new Date(
+            measurement.datetime.utc
+          ).getTime();
         }
       } else {
         // Fallback: use sensor ID as the key if no parameter info available
         const key = `SENSOR_${measurement.sensorsId}`;
-        metrics[key] = measurement.value.toFixed(2);
+        metrics[key] = parseFloat(measurement.value.toFixed(2));
       }
     });
 
@@ -198,7 +193,7 @@ export const getAirQualityForCity = async (
     });
 
     const cityAirQuality: CityAirQuality = {
-      id: String(city.id),
+      id: city.id,
       cityName: city.name,
       location: city.location,
       updatedTime,

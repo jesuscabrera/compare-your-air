@@ -12,18 +12,36 @@ let theme = createTheme({
     fontFamily: "'Open Sans', sans-serif",
     h1: { fontSize: "3.2rem", fontWeight: 600, color: "white" },
     h2: { fontSize: "1.5rem", fontWeight: 400, color: "white", lineHeight: 2 },
-    h5: { fontSize: "2rem", fontWeight: 600, lineHeight: 1.5 },
-    body1: { fontSize: "1rem", color: "#000" },
-    body2: { fontSize: "0.875rem", fontWeight: 600, color: "#000" },
+    h5: {
+      fontSize: "2rem",
+      lineHeight: 1.8,
+      fontWeight: 900,
+      textAlign: "left",
+    },
+    body1: { fontSize: "1rem", color: "#000", textAlign: "left" },
+    overline: {
+      fontSize: "0.875rem",
+      fontWeight: 600,
+      color: "#000",
+      textTransform: "uppercase",
+      textAlign: "left",
+      lineHeight: 1.5,
+    },
   },
   components: {
     MuiCard: {
       styleOverrides: {
-        root: {
+        root: ({ theme }) => ({
           borderRadius: 8,
           boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
           backgroundColor: "#fff",
-        },
+          position: "relative",
+          width: "100%",
+          marginBottom: theme.spacing(2),
+          [theme.breakpoints.up("sm")]: {
+            maxWidth: 450, // Apply maxWidth only on small screens and above
+          },
+        }),
       },
     },
     MuiButton: {

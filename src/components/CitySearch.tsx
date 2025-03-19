@@ -23,6 +23,13 @@ const CitySearch: React.FC<CitySearchProps> = ({ onCitySelect }) => {
   // Add the cache state
   const [searchCache, setSearchCache] = useState<Record<string, City[]>>({});
 
+  /*
+   * TODO: Consider using AbortController for request cancellation
+   * Current 'active' flag prevents state updates but doesn't cancel network requests
+   * Adding controller.abort() in cleanup would properly terminate in-flight fetches
+   * Requires updating searchCities to accept and use an AbortSignal
+   */
+
   useEffect(() => {
     let active = true;
 
@@ -44,7 +51,10 @@ const CitySearch: React.FC<CitySearchProps> = ({ onCitySelect }) => {
       } catch (error) {
         console.error("Error searching cities:", error);
       } finally {
-        setLoading(false);
+        // Fixed: Only set loading if still active
+        if (active) {
+          setLoading(false);
+        }
       }
     };
 
@@ -52,14 +62,14 @@ const CitySearch: React.FC<CitySearchProps> = ({ onCitySelect }) => {
     return () => {
       active = false;
     };
-  }, [inputValue]);
+  }, [inputValue, searchCache]); // Fixed: Added searchCache dependency
 
   return (
     <Box
       sx={{
         width: "100%",
-        maxWidth: 450,
-        margin: "0 auto",
+        maxWidth: { sm: 450 },
+        mx: "auto",
         px: { xs: 1, sm: 2, md: 0 },
       }}
     >
@@ -94,7 +104,7 @@ const CitySearch: React.FC<CitySearchProps> = ({ onCitySelect }) => {
                 ...params.InputProps,
                 startAdornment: (
                   <InputAdornment position="start">
-                    <SearchIcon sx={{ color: "rgba(0, 0, 0, 0.54)" }} />
+                    <SearchIcon sx={{ color: "lightgray" }} />
                   </InputAdornment>
                 ),
                 endAdornment: (
@@ -112,7 +122,7 @@ const CitySearch: React.FC<CitySearchProps> = ({ onCitySelect }) => {
         )}
         sx={{
           "& .MuiOutlinedInput-root": {
-            backgroundColor: "#ffffff",
+            backgroundColor: "common.white",
             borderRadius: 2,
             position: "relative",
           },

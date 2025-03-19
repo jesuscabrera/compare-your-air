@@ -37,7 +37,7 @@ export const useAirQuality = () => {
 
   // Select a city and fetch its air quality
   const handleCitySelect = async (city: City) => {
-    if (selectedCities.some((c) => c.cityName.includes(city.name))) {
+    if (selectedCities.some((c) => c.id === city.id)) {
       return;
     }
 
@@ -48,7 +48,7 @@ export const useAirQuality = () => {
   };
 
   // Remove a city from the selected list
-  const handleRemoveCity = (cityId: string) => {
+  const handleRemoveCity = (cityId: number) => {
     setSelectedCities((prev) => prev.filter((city) => city.id !== cityId));
   };
 

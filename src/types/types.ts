@@ -19,9 +19,17 @@ export interface City {
 }
 
 export interface CityAirQuality {
-  id: string;
+  id: number;
   cityName: string;
   location: string;
   updatedTime: string;
   metrics: Record<string, number>;
+}
+
+export interface Measurement {
+  datetime: {
+    utc: string; // ISO date string format
+  };
+  sensorsId: number;
+  value: number;
 }

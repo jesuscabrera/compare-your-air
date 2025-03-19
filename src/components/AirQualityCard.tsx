@@ -44,14 +44,7 @@ const AirQualityCard: React.FC<AirQualityCardProps> = ({
 
   return (
     <Grow in={visible} timeout={500} onExited={onClose}>
-      <Card
-        sx={{
-          position: "relative",
-          width: "100%",
-          maxWidth: { xs: "100%", sm: 450 },
-          marginBottom: 2,
-        }}
-      >
+      <Card>
         <IconButton
           size="large"
           onClick={handleClose}
@@ -66,38 +59,38 @@ const AirQualityCard: React.FC<AirQualityCardProps> = ({
         </IconButton>
 
         <CardContent sx={{ my: 1, mx: 2 }}>
-          <Typography
-            variant="body2"
-            component="div"
-            sx={{ textTransform: "uppercase", textAlign: "left" }}
-          >
+          <Typography variant="overline" component="div">
             {TEXTS.updated} {updatedTime}
           </Typography>
-          <Typography
-            variant="h5"
-            component="div"
-            color="primary"
-            sx={{ fontWeight: 900, textAlign: "left" }}
-          >
+          <Typography variant="h5" color="primary">
             {cityName}
           </Typography>
           <Typography
-            variant="body2"
-            sx={{ mb: 1, fontWeight: 400, textAlign: "left" }}
+            variant="overline"
+            component="div"
+            sx={{ mb: 1, fontWeight: 400 }}
           >
             {TEXTS.locationPrefix} {location}, {TEXTS.country}
           </Typography>
 
-          <Typography
-            variant="body2"
-            fontWeight={600}
-            sx={{ textAlign: "left" }}
-          >
-            {TEXTS.values}&nbsp;
+          <Typography variant="body1" fontWeight={600}>
+            <Typography component="span" fontWeight={600} sx={{ mr: 1 }}>
+              {TEXTS.values}
+            </Typography>
             {getMetricsInfo().map((metric, i) => (
               <React.Fragment key={metric.name}>
-                {metric.name}: {metric.value}
-                {i < getMetricsInfo().length - 1 ? ", " : ""} &nbsp;
+                <Typography
+                  component="span"
+                  fontWeight={600}
+                  sx={{
+                    display: "inline-block",
+                    whiteSpace: "nowrap",
+                    mr: 1,
+                  }}
+                >
+                  {metric.name}: {metric.value}
+                  {i < getMetricsInfo().length - 1 ? "," : ""}
+                </Typography>
               </React.Fragment>
             ))}
           </Typography>
